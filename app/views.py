@@ -28,14 +28,14 @@ def api_deals(request):
                 file_reader = csv.reader(r_file, delimiter=",")
                 for row in file_reader:
                     created_cust = Customer.objects.update_or_create(
-                        username=row[0],
-                        defaults={'spent_money': row[2]})
-                    created = Deals.objects.get_or_create(
-                        customer=row[0],
-                        defaults={'item': row[1],
-                        'total': row[2],
-                        'quantity': row[3],
-                        'date': row[4]})
+                        username=row[0])
+                    user = Customer.objects.get(username = row[0])
+                    created = Deals.objects.create(
+                        customer=user,
+                        item=row[1],
+                        total=row[2],
+                        quantity=row[3],
+                        date=row[4])
         serializer = DealsSerializer(data=created)
         if serializer.is_valid():
             serializer.save()
