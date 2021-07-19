@@ -1,28 +1,22 @@
 from django.db import models
 from django.utils import timezone
 
-class CalcManager(models.Manager):
-    def get_query_set(self):
-        spent_money=super(CalcManager, self).get_query_set().extra(select={'spent_money': "first+second"})
-
 class Customer(models.Model):
-    #username = models.TextField(max_length=30)
-    first = models.FloatField(null=True)
-    second = models.FloatField(null=True)
+    username = models.TextField(max_length=30)
     spent_money = models.FloatField(null=True, blank=True)
-    objects = CalcManager()
-    #gems = models.TextField(max_length=50)
+    gems = models.TextField(max_length=50)
 
-class DealsQuerySet(models.QuerySet):
-    def order_by_customer_count(self):
-        return self.annotate(cnt=models.Count('deals.customer')).order_by('cnt')
+    def __str__(self):
+        return self.username
 
-class DealsManager(models.Manager):
-    def get_queryset(self):
-        return DealsQuerySet(self.model, using=self._db)
-
-    def order_by_customer_count(self):
-        return self.get_queryset().order_by_customer_count()
+    def save(self, *args, **kwargs):
+        list_spent_money=[]
+        s = 0
+        list_spent_money.append(self.spent_money)
+        for m in list_spent_money:
+            s+=int(m)
+            self.spent_money = s
+            super(Customer, self).save(*args, **kwargs)
 
 class Deals(models.Model):
     customer = models.TextField(max_length=30)
@@ -30,7 +24,8 @@ class Deals(models.Model):
     total = models.FloatField(null=True, blank=True)
     quantity = models.FloatField(null=True, blank=True)
     date = models.DateTimeField(default=timezone.now)
-    objects = DealsManager()
-    
+        
     def __str__(self):
         return self.customer
+
+

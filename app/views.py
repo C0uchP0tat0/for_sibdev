@@ -1,12 +1,20 @@
-import django_filters.rest_framework
+#import django_filters.rest_framework
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import exception_handler
 from rest_framework import status, generics
 from django.http import HttpResponse
 import csv
-from .models import Deals
-from .serializers import DealsSerializer
+from .models import Deals, Customer
+from .serializers import DealsSerializer, CustomerSerializer
+
+
+@api_view(['GET'])
+def api_сustomer(request):
+    if request.method == 'GET':
+        сustomer = Customer.objects.all()
+        serializer = CustomerSerializer(сustomer, many=True)
+        return Response(serializer.data)
 
 @api_view(['GET', 'POST'])
 def api_deals(request):
@@ -19,12 +27,15 @@ def api_deals(request):
         with open("deals1.csv") as r_file:
                 file_reader = csv.reader(r_file, delimiter=",")
                 for row in file_reader:
+                    created_cust = Customer.objects.update_or_create(
+                        username=row[0],
+                        defaults={'spent_money': row[2]})
                     created = Deals.objects.get_or_create(
                         customer=row[0],
-                        item=row[1],
-                        total=row[2],
-                        quantity=row[3],
-                        date=row[4])
+                        defaults={'item': row[1],
+                        'total': row[2],
+                        'quantity': row[3],
+                        'date': row[4]})
         serializer = DealsSerializer(data=created)
         if serializer.is_valid():
             serializer.save()
