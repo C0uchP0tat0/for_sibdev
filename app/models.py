@@ -16,6 +16,12 @@ class Deals(models.Model):
     def __str__(self):
         return self.item
 
+    def save(self, *args, **kwargs):
+        total=0
+        self.customer.spent_money = total+int(self.total)
+        self.customer.save()
+        super(Deals, self).save(*args, **kwargs)
+
 class CustomerManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().order_by('username')
@@ -29,6 +35,4 @@ class Customer(models.Model):
     def __str__(self):
         return self.username
 
-    def save(self, *args, **kwargs):
-        self.spent_money+=self.spent_money
-        super(Customer, self).save(*args, **kwargs)
+    

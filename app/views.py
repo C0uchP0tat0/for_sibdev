@@ -28,8 +28,7 @@ def api_deals(request):
                 file_reader = csv.reader(r_file, delimiter=",")
                 for row in file_reader:
                     created_cust = Customer.objects.update_or_create(
-                        username=row[0],
-                        spent_money=[2])
+                        username=row[0])
                     user = Customer.objects.get(username = row[0])
                     created = Deals.objects.create(
                         customer=user,
