@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.db.models import Sum
 
 class DealsManager(models.Manager):
     def get_queryset(self):
@@ -16,11 +17,14 @@ class Deals(models.Model):
     def __str__(self):
         return self.item
 
-    def save(self, *args, **kwargs):
-        total=0
-        self.customer.spent_money = total+int(self.total)
+    '''def save(self, *args, **kwargs):
+        total = 0
+        spent_total = total + int(self.total)
+        self.customer.spent_money = spent_total
+        #self.spent_money = total_spent_money+int(self.total)
+        #self.spent_money = total_spent_money
         self.customer.save()
-        super(Deals, self).save(*args, **kwargs)
+        super(Deals, self).save(*args, **kwargs)'''
 
 class CustomerManager(models.Manager):
     def get_queryset(self):
@@ -34,5 +38,3 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.username
-
-    

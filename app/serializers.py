@@ -4,7 +4,7 @@ from .models import Deals, Customer
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ('username')
+        fields = ('username', 'spent_money')
 
 class DealsSerializer(serializers.ModelSerializer):
     class Meta:
