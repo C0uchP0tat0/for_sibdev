@@ -1,0 +1,11 @@
+{% block title %}{{ customer.username }}{% endblock %}
+
+{% block content %}
+<h2>Пользователь:{{ current_customer.username }}</h2>
+{% for deal in deals %}
+	<h2>Потрачено:{{ deal.total }}</h2>
+{% endfor %}
+<h2>Всего потрачено:{{ spent_money.total_spent_money }}</h2>
+{% endblock %}
+
+

@@ -9,14 +9,14 @@ import csv
 from .models import Deals, Customer
 from .serializers import DealsSerializer, CustomerSerializer
 
-def сustomer(request):
-    deals = Deals.objects.all()
-    customer = Customer.objects.all()
+def сustomer(request, customer_id):
+    deals = Deals.objects.filter(customer=customer_id)
+    customers = Customer.objects.all()
+    current_customer = Customer.objects.get(pk=customer_id)
     spent_money = deals.aggregate(total_spent_money=Sum('total'))
-    context = {'deals': deals,
-               'spent_money': spent_money,
-               'customer': customer}
-    return render(request, 'spent_money.html', context)
+    context = {'deals': deals,'customers': customers,
+               'spent_money': spent_money, 'current_customer': current_customer}
+    return render(request, 'сustomer.html', context)
 
 @api_view(['GET'])
 def api_сustomer(request):
@@ -35,10 +35,13 @@ def api_deals(request):
         with open("deals1.csv") as r_file:
                 file_reader = csv.reader(r_file, delimiter=",")
                 for row in file_reader:
-                    created_cust = Customer.objects.get_or_create(
+                    created_cust = Customer.objects.update_or_create(
                         username=row[0],
-                        defaults={'spent_money': row[2]})
-                    user = Customer.objects.get(username = row[0])
+                        defaults={'spent_money': 0})
+                    user = Customer.objects.get(username=row[0])
+                    deal = Deals.objects.filter(customer=user)
+                    spent_money = deal.aggregate(total_spent_money=Sum('total'))
+                    Customer.objects.update(spent_money=spent_money['total_spent_money'])
                     created = Deals.objects.create(
                         customer=user,
                         item=row[1],
