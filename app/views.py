@@ -21,7 +21,7 @@ def сustomer(request, customer_id):
 @api_view(['GET'])
 def api_сustomer(request):
     if request.method == 'GET':
-        сustomer = Customer.objects.all()
+        сustomer = Customer.objects.all()[0:5]
         serializer = CustomerSerializer(сustomer, many=True)
         return Response(serializer.data)
 
@@ -39,15 +39,18 @@ def api_deals(request):
                         username=row[0],
                         defaults={'spent_money': 0})
                     user = Customer.objects.get(username=row[0])
-                    deal = Deals.objects.filter(customer=user)
-                    spent_money = deal.aggregate(total_spent_money=Sum('total'))
-                    Customer.objects.update(spent_money=spent_money['total_spent_money'])
-                    created = Deals.objects.create(
+                    created = Deals.objects.update_or_create(
                         customer=user,
                         item=row[1],
                         total=row[2],
                         quantity=row[3],
                         date=row[4])
+        user_iter = Customer.objects.all()
+        for u in user_iter:
+            deal = Deals.objects.filter(customer=u)
+            spent_money = deal.aggregate(total_spent_money=Sum('total'))
+            Customer.objects.filter(username=u.username).update(
+                                    spent_money=spent_money['total_spent_money'])
         serializer = DealsSerializer(data=created)
         if serializer.is_valid():
             serializer.save()

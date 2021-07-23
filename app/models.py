@@ -17,23 +17,14 @@ class Deals(models.Model):
     def __str__(self):
         return self.item
 
-    '''def save(self, *args, **kwargs):
-        total = 0
-        spent_total = total + int(self.total)
-        self.customer.spent_money = spent_total
-        #self.spent_money = total_spent_money+int(self.total)
-        #self.spent_money = total_spent_money
-        self.customer.save()
-        super(Deals, self).save(*args, **kwargs)'''
-
 class CustomerManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().order_by('username')
+        return super().get_queryset().order_by('-spent_money')
 
 class Customer(models.Model):
     username = models.TextField(max_length=30)
     spent_money = models.FloatField(null=True, blank=True)
-    #gems = models.TextField(max_length=50)
+    #gems = models.TextField()
     objects = CustomerManager()
 
     def __str__(self):
