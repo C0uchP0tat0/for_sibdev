@@ -24,7 +24,7 @@ class CustomerManager(models.Manager):
 class Customer(models.Model):
     username = models.TextField(max_length=30)
     spent_money = models.FloatField(null=True, blank=True)
-    #gems = models.TextField()
+    gems = models.TextField()
     objects = CustomerManager()
 
     def __str__(self):

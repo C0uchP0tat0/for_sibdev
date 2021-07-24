@@ -32,7 +32,7 @@ def api_deals(request):
         serializer = DealsSerializer(deals, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
-        with open("deals1.csv") as r_file:
+        with open("deals.csv") as r_file:
                 file_reader = csv.reader(r_file, delimiter=",")
                 for row in file_reader:
                     created_cust = Customer.objects.update_or_create(
@@ -48,9 +48,17 @@ def api_deals(request):
         user_iter = Customer.objects.all()
         for u in user_iter:
             deal = Deals.objects.filter(customer=u)
+            gem_list=[]
+            gem_list.append(deal)
+            gem_str=str(gem_list)
+            symbols = ['[<QuerySet ','[<Deals: ','>','<Deals: ','>]>]']
+            gem_str_remove=gem_str.replace('[<QuerySet ', '').replace(
+                '[<Deals: ', '').replace('>', '').replace(
+                '<Deals: ', '').replace(']', '')         
             spent_money = deal.aggregate(total_spent_money=Sum('total'))
             Customer.objects.filter(username=u.username).update(
-                                    spent_money=spent_money['total_spent_money'])
+                                    spent_money=spent_money['total_spent_money'],
+                                    gems = gem_str_remove)
         serializer = DealsSerializer(data=created)
         if serializer.is_valid():
             serializer.save()
