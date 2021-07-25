@@ -54,7 +54,7 @@ def api_deals(request):
             symbols = ['[<QuerySet ','[<Deals: ','>','<Deals: ','>]>]']
             gem_str_remove=gem_str.replace('[<QuerySet ', '').replace(
                 '[<Deals: ', '').replace('>', '').replace(
-                '<Deals: ', '').replace(']', '')         
+                '<Deals: ', '').replace(']', '').replace("'...(remaining elements truncated)...'", "")        
             spent_money = deal.aggregate(total_spent_money=Sum('total'))
             Customer.objects.filter(username=u.username).update(
                                     spent_money=spent_money['total_spent_money'],
